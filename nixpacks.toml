@@ -3,8 +3,8 @@ nixPkgs = ["nodejs_20", "php83", "php83Extensions.bcmath", "php83Extensions.curl
 
 [phases.install]
 cmds = [
-  "curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer",
-  "composer install --no-dev --optimize-autoloader --no-interaction",
+  "curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer && ls -la /usr/local/bin/composer",
+  "/usr/local/bin/composer install --no-dev --optimize-autoloader --no-interaction",
   "npm ci",
   "npm run build"
 ]
