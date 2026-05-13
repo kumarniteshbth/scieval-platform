@@ -35,7 +35,6 @@ WORKDIR /app
 
 # Copy composer files
 COPY composer.json composer.lock ./
-
 # Install PHP dependencies
 RUN composer install --no-dev --optimize-autoloader --no-interaction --no-scripts
 
@@ -43,11 +42,11 @@ RUN composer install --no-dev --optimize-autoloader --no-interaction --no-script
 COPY package.json package-lock.json ./
 
 # Install Node dependencies and build assets
-RUN npm install && npm run build
+RUN npm install
 
 # Copy application code
 COPY . .
-
+RUN npm run build
 # Run composer scripts now
 RUN composer dump-autoload --optimize
 
