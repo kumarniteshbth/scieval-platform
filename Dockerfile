@@ -50,10 +50,8 @@ RUN npm run build
 # Run composer scripts now
 RUN composer dump-autoload --optimize
 
-# Cache Laravel config
-RUN php artisan config:cache && \
-    php artisan route:cache && \
-    php artisan view:cache
+# NOTE: Do NOT cache config at build time - env vars (DB) are not available yet!
+# Caching is done at runtime in the CMD below.
 
 # Set permissions
 RUN chmod -R 775 storage bootstrap/cache
@@ -61,5 +59,5 @@ RUN chmod -R 775 storage bootstrap/cache
 # Expose port
 EXPOSE $PORT
 
-# Start command
-CMD php artisan migrate --force && php artisan db:seed --force && php artisan serve --host=0.0.0.0 --port=$PORT
+# Start command: cache config at runtime (env vars are NOW available), then migrate and serve
+CMD php artisan config:cache && php artisan route:cache && php artisan view:cache && php artisan storage:link --force && php artisan migrate --force && php artisan serve --host=0.0.0.0 --port=${PORT:-8000}

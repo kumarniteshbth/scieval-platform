@@ -9,12 +9,7 @@ cmds = [
   "npm run build"
 ]
 
-[phases.build]
-cmds = [
-  "php artisan config:cache",
-  "php artisan route:cache",
-  "php artisan view:cache"
-]
+# NOTE: No build-time caching - DB env vars are NOT available at build time
 
 [start]
-cmd = "php artisan storage:link --force && php artisan migrate --force && php artisan serve --host=0.0.0.0 --port=$PORT"
+cmd = "php artisan config:cache && php artisan route:cache && php artisan view:cache && php artisan storage:link --force && php artisan migrate --force && php artisan serve --host=0.0.0.0 --port=${PORT:-8000}"
