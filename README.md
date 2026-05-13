@@ -1,59 +1,114 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# 🔬 SciEval — Scientific Temper & Science Literacy Evaluation Platform
 
 <p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
+  <img src="https://img.shields.io/badge/Laravel-12.x-red?style=for-the-badge&logo=laravel" alt="Laravel 12"/>
+  <img src="https://img.shields.io/badge/PHP-8.3-blue?style=for-the-badge&logo=php" alt="PHP 8.3"/>
+  <img src="https://img.shields.io/badge/TailwindCSS-3.x-38bdf8?style=for-the-badge&logo=tailwindcss" alt="TailwindCSS"/>
+  <img src="https://img.shields.io/badge/MySQL-Production-orange?style=for-the-badge&logo=mysql" alt="MySQL"/>
 </p>
 
-## About Laravel
+> **B.Tech Major Project** — A full-stack Laravel 12 MVC web application to evaluate Scientific Temper & Science Literacy through adaptive quizzes, analytics, leaderboard and AI-powered recommendations.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+---
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## 🚀 Live Demo
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+> Deployed on Railway.app — [Coming Soon]
 
-## Learning Laravel
+---
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+## ✨ Features
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+- 🎯 **Adaptive Quiz Engine** — Timed quizzes with instant feedback and scoring
+- 📊 **Analytics Dashboard** — Sub-score breakdown (Scientific Temper vs Science Literacy)
+- 🏆 **Leaderboard** — Ranked results among all participants
+- 👨‍💼 **Admin Panel** — Full CRUD for quizzes, questions, categories, users, and results
+- 🔐 **Role-Based Auth** — Admin and User roles with middleware protection
+- 📄 **PDF Export** — Download result certificates via DomPDF
+- 📱 **Responsive UI** — TailwindCSS + Alpine.js for smooth UX
 
-## Laravel Sponsors
+---
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+## 🛠️ Tech Stack
 
-### Premium Partners
+| Layer | Technology |
+|---|---|
+| Backend | Laravel 12 (PHP 8.3) |
+| Frontend | Blade Templates + TailwindCSS 3 + Alpine.js |
+| Build Tool | Vite |
+| Database | MySQL (production), SQLite (local dev) |
+| Auth | Laravel Breeze |
+| PDF | barryvdh/laravel-dompdf |
+| Hosting | Railway.app |
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+---
 
-## Contributing
+## ⚙️ Local Setup
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+```bash
+# 1. Clone the repository
+git clone https://github.com/kumarniteshbth/scieval-platform.git
+cd scieval-platform
 
-## Code of Conduct
+# 2. Install PHP dependencies
+composer install
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+# 3. Copy environment file
+cp .env.example .env
 
-## Security Vulnerabilities
+# 4. Generate application key
+php artisan key:generate
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+# 5. Run migrations + seed data
+php artisan migrate --seed
 
-## License
+# 6. Install Node dependencies & build assets
+npm install
+npm run build
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+# 7. Start the development server
+php artisan serve
+```
+
+Visit `http://localhost:8000`
+
+**Default Admin Credentials:**
+- Email: `admin@scieval.com`
+- Password: `password`
+
+---
+
+## 📦 Database Schema
+
+- `users` — Auth + role (admin/user)
+- `categories` — Quiz categories (e.g., Physics, Biology)
+- `quizzes` — Quiz metadata + time limit
+- `questions` — Questions linked to quizzes
+- `options` — Answer choices per question
+- `quiz_attempts` — User quiz session tracking
+- `attempt_answers` — Per-question answers per attempt
+- `results` — Final scores + sub-scores
+
+---
+
+## 🚢 Deployment (Railway.app)
+
+See the deployment guide in the project wiki or run:
+
+```bash
+# Set environment variables on Railway, then Railway auto-deploys from GitHub
+# Required: APP_KEY, DB_CONNECTION=mysql, DB_HOST, DB_PORT, DB_DATABASE, DB_USERNAME, DB_PASSWORD
+```
+
+---
+
+## 👨‍💻 Developer
+
+**Nitesh Kumar**
+B.Tech Student — [GitHub](https://github.com/kumarniteshbth)
+
+---
+
+## 📄 License
+
+This project is open-sourced under the [MIT License](LICENSE).
