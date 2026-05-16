@@ -48,8 +48,8 @@ RUN composer install --no-dev --optimize-autoloader --no-interaction --no-script
 # Copy package files
 COPY package.json package-lock.json ./
 
-# Install Node dependencies
-RUN npm ci
+# Install Node dependencies (--legacy-peer-deps to handle vite peer dep conflicts)
+RUN npm install --legacy-peer-deps
 
 # Copy application code
 COPY . .
