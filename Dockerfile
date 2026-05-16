@@ -64,7 +64,7 @@ RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cac
 # Expose port (Railway/Render will set $PORT)
 EXPOSE 8000
 
-# Start command using php artisan serve (simple, works with $PORT)
+# Start command using php artisan serve with PORT cast to int (avoid string+int bug)
 CMD sh -c "php artisan storage:link --force && \
     php artisan config:clear && \
     php artisan migrate --force && \
@@ -72,4 +72,4 @@ CMD sh -c "php artisan storage:link --force && \
     php artisan config:cache && \
     php artisan route:cache && \
     php artisan view:cache && \
-    php artisan serve --host=0.0.0.0 --port=${PORT:-8000}"
+    php artisan serve --host=0.0.0.0 --port=$((PORT))"
