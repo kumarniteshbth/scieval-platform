@@ -2,8 +2,7 @@
 nixPkgs = [
   "php83",
   "php83Extensions.pdo",
-  "php83Extensions.pdo_mysql", 
-  "php83Extensions.pdo_sqlite",
+  "php83Extensions.pdo_mysql",
   "php83Extensions.mbstring",
   "php83Extensions.tokenizer",
   "php83Extensions.xml",
@@ -15,6 +14,7 @@ nixPkgs = [
   "php83Extensions.curl",
   "php83Extensions.zip",
   "php83Extensions.gd",
+  "php83Extensions.opcache",
   "composer",
   "nodejs_20",
   "npm"
@@ -29,11 +29,10 @@ cmds = [
 
 [phases.build]
 cmds = [
-  "php artisan storage:link --force",
   "php artisan config:clear",
   "php artisan route:clear",
   "php artisan view:clear"
 ]
 
 [start]
-cmd = "php artisan migrate --force && php artisan db:seed --force && php artisan serve --host=0.0.0.0 --port=$PORT"
+cmd = "php artisan storage:link --force && php artisan migrate --force && php artisan db:seed --class=DatabaseSeeder --force 2>/dev/null || true && php artisan config:cache && php artisan route:cache && php artisan view:cache && php artisan serve --host=0.0.0.0 --port=$PORT"

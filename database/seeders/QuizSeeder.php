@@ -38,16 +38,17 @@ class QuizSeeder extends Seeder
             $category = Category::where('slug', $quizData['category'])->first();
             if (!$category) continue;
 
-            Quiz::create([
-                'category_id'   => $category->id,
-                'title'         => $quizData['title'],
-                'description'   => $quizData['description'],
-                'difficulty'    => $quizData['difficulty'],
-                'time_limit'    => $quizData['time_limit'],
-                'passing_score' => 60,
-                'is_active'     => true,
-                'created_by'    => 1, // admin
-            ]);
+            Quiz::firstOrCreate(
+                ['title' => $quizData['title'], 'category_id' => $category->id],
+                [
+                    'description'   => $quizData['description'],
+                    'difficulty'    => $quizData['difficulty'],
+                    'time_limit'    => $quizData['time_limit'],
+                    'passing_score' => 60,
+                    'is_active'     => true,
+                    'created_by'    => 1, // admin
+                ]
+            );
         }
     }
 }

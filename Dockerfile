@@ -1,4 +1,4 @@
-FROM php:8.3-cli
+FROM php:8.3-apache
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y \
@@ -9,55 +9,74 @@ RUN apt-get update && apt-get install -y \
     libxml2-dev \
     libzip-dev \
     libcurl4-openssl-dev \
+    libfreetype6-dev \
+    libjpeg62-turbo-dev \
     pkg-config \
     unzip \
-    nodejs \
-    npm \
+    && curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
+    && apt-get install -y nodejs \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Install PHP extensions
-RUN docker-php-ext-install \
+RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-install -j$(nproc) \
     pdo \
     pdo_mysql \
     mbstring \
     exif \
     pcntl \
     bcmath \
-    xml \
     zip \
-    curl
+    gd \
+    opcache
 
 # Install Composer
-COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+COPY --from=composer:2.7 /usr/bin/composer /usr/bin/composer
+
+# Enable Apache mod_rewrite
+RUN a2enmod rewrite
 
 # Set working directory
-WORKDIR /app
+WORKDIR /var/www/html
 
-# Copy composer files
+# Copy composer files first (for layer caching)
 COPY composer.json composer.lock ./
-# Install PHP dependencies
+
+# Install PHP dependencies (no scripts yet - env not available)
 RUN composer install --no-dev --optimize-autoloader --no-interaction --no-scripts
 
 # Copy package files
 COPY package.json package-lock.json ./
 
-# Install Node dependencies and build assets
-RUN npm install
+# Install Node dependencies
+RUN npm ci
 
 # Copy application code
 COPY . .
+
+# Build frontend assets
 RUN npm run build
-# Run composer scripts now
+
+# Run composer scripts now (post-autoload-dump etc.)
 RUN composer dump-autoload --optimize
 
-# NOTE: Do NOT cache config at build time - env vars (DB) are not available yet!
-# Caching is done at runtime in the CMD below.
+# Set proper permissions for storage and cache
+RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache \
+    && chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
 
-# Set permissions
-RUN chmod -R 775 storage bootstrap/cache
+# Configure Apache to serve from public directory
+RUN sed -i 's|DocumentRoot /var/www/html|DocumentRoot /var/www/html/public|g' /etc/apache2/sites-available/000-default.conf \
+    && echo '<Directory /var/www/html/public>\n\tAllowOverride All\n\tRequire all granted\n</Directory>' >> /etc/apache2/sites-available/000-default.conf
 
-# Expose port
-EXPOSE $PORT
+# Create .htaccess for Apache if not present
+RUN echo "Listen \${PORT:-80}" > /etc/apache2/ports.conf \
+    && sed -i 's|<VirtualHost \*:80>|<VirtualHost *:${PORT:-80}>|g' /etc/apache2/sites-available/000-default.conf
 
-# Start command: cache config at runtime (env vars are NOW available), then migrate and serve
-CMD php artisan config:cache && php artisan route:cache && php artisan view:cache && php artisan storage:link --force && php artisan migrate --force && php artisan serve --host=0.0.0.0 --port=${PORT:-8000}
+# Startup script
+COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
+RUN chmod +x /usr/local/bin/docker-entrypoint.sh
+
+EXPOSE 80
+
+ENTRYPOINT ["docker-entrypoint.sh"]
+CMD ["apache2-foreground"]

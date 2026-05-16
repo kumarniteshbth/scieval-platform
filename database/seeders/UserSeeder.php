@@ -10,14 +10,16 @@ class UserSeeder extends Seeder
 {
     public function run(): void
     {
-        // Admin user
-        User::create([
-            'name'        => 'Admin Kumar',
-            'email'       => 'admin@scienceeval.com',
-            'password'    => Hash::make('password'),
-            'role'        => 'admin',
-            'institution' => 'Science Evaluation Platform',
-        ]);
+        // Admin user - use firstOrCreate to avoid duplicates on re-deploy
+        User::firstOrCreate(
+            ['email' => 'admin@scienceeval.com'],
+            [
+                'name'        => 'Admin Kumar',
+                'password'    => Hash::make('password'),
+                'role'        => 'admin',
+                'institution' => 'Science Evaluation Platform',
+            ]
+        );
 
         // Sample students
         $students = [
@@ -29,13 +31,15 @@ class UserSeeder extends Seeder
         ];
 
         foreach ($students as $student) {
-            User::create([
-                'name'        => $student['name'],
-                'email'       => $student['email'],
-                'password'    => Hash::make('password'),
-                'role'        => 'student',
-                'institution' => 'Government Engineering College',
-            ]);
+            User::firstOrCreate(
+                ['email' => $student['email']],
+                [
+                    'name'        => $student['name'],
+                    'password'    => Hash::make('password'),
+                    'role'        => 'student',
+                    'institution' => 'Government Engineering College',
+                ]
+            );
         }
     }
 }

@@ -1,0 +1,73 @@
+services:
+  - type: web
+    name: scieval-platform
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /
+    envVars:
+      - key: APP_NAME
+        value: SciEval
+      - key: APP_ENV
+        value: production
+      - key: APP_DEBUG
+        value: "false"
+      - key: APP_KEY
+        generateValue: true
+      - key: APP_URL
+        fromService:
+          type: web
+          name: scieval-platform
+          property: host
+      - key: LOG_CHANNEL
+        value: stderr
+      - key: LOG_LEVEL
+        value: error
+      - key: DB_CONNECTION
+        value: mysql
+      - key: DB_HOST
+        fromDatabase:
+          name: scieval-db
+          property: host
+      - key: DB_PORT
+        fromDatabase:
+          name: scieval-db
+          property: port
+      - key: DB_DATABASE
+        fromDatabase:
+          name: scieval-db
+          property: database
+      - key: DB_USERNAME
+        fromDatabase:
+          name: scieval-db
+          property: user
+      - key: DB_PASSWORD
+        fromDatabase:
+          name: scieval-db
+          property: password
+      - key: SESSION_DRIVER
+        value: cookie
+      - key: CACHE_STORE
+        value: file
+      - key: QUEUE_CONNECTION
+        value: sync
+      - key: FILESYSTEM_DISK
+        value: local
+
+  - type: pserv
+    name: scieval-db
+    runtime: image
+    image:
+      url: docker.io/library/mysql:8.0
+    envVars:
+      - key: MYSQL_DATABASE
+        value: scieval
+      - key: MYSQL_USER
+        value: scieval_user
+      - key: MYSQL_PASSWORD
+        generateValue: true
+      - key: MYSQL_ROOT_PASSWORD
+        generateValue: true
+    disk:
+      name: scieval-mysql-data
+      mountPath: /var/lib/mysql
+      sizeGB: 10
