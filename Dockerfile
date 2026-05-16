@@ -1,4 +1,4 @@
-FROM php:8.3-apache
+FROM php:8.3-cli
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y \
@@ -33,9 +33,6 @@ RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
 # Install Composer
 COPY --from=composer:2.7 /usr/bin/composer /usr/bin/composer
 
-# Enable Apache mod_rewrite
-RUN a2enmod rewrite
-
 # Set working directory
 WORKDIR /var/www/html
 
@@ -64,19 +61,15 @@ RUN composer dump-autoload --optimize
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache \
     && chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
 
-# Configure Apache to serve from public directory
-RUN sed -i 's|DocumentRoot /var/www/html|DocumentRoot /var/www/html/public|g' /etc/apache2/sites-available/000-default.conf \
-    && echo '<Directory /var/www/html/public>\n\tAllowOverride All\n\tRequire all granted\n</Directory>' >> /etc/apache2/sites-available/000-default.conf
+# Expose port (Railway/Render will set $PORT)
+EXPOSE 8000
 
-# Create .htaccess for Apache if not present
-RUN echo "Listen \${PORT:-80}" > /etc/apache2/ports.conf \
-    && sed -i 's|<VirtualHost \*:80>|<VirtualHost *:${PORT:-80}>|g' /etc/apache2/sites-available/000-default.conf
-
-# Startup script
-COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
-RUN chmod +x /usr/local/bin/docker-entrypoint.sh
-
-EXPOSE 80
-
-ENTRYPOINT ["docker-entrypoint.sh"]
-CMD ["apache2-foreground"]
+# Start command using php artisan serve (simple, works with $PORT)
+CMD sh -c "php artisan storage:link --force && \
+    php artisan config:clear && \
+    php artisan migrate --force && \
+    (php artisan db:seed --force 2>/dev/null; true) && \
+    php artisan config:cache && \
+    php artisan route:cache && \
+    php artisan view:cache && \
+    php artisan serve --host=0.0.0.0 --port=${PORT:-8000}"
