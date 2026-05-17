@@ -55,9 +55,9 @@
                                 {{ ucfirst($user->role) }}
                             </span>
                         </td>
-                        <td class="px-6 py-4 text-gray-300 text-sm">{{ $user->quiz_attempts_count }}</td>
+                        <td class="px-6 py-4 text-gray-300 text-sm">{{ $user->quiz_attempts_count ?? 0 }}</td>
                         <td class="px-6 py-4">
-                            @php $avg = $user->quiz_attempts->filter(fn($a) => $a->result)->avg(fn($a) => $a->result->score_percentage); @endphp
+                            @php $avg = $user->quizAttempts->filter(fn($a) => $a->result)->avg(fn($a) => $a->result->score_percentage); @endphp
                             <span class="font-bold text-sm {{ $avg >= 60 ? 'text-emerald-400' : 'text-red-400' }}">
                                 {{ $avg ? round($avg) . '%' : '—' }}
                             </span>

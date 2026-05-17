@@ -10,7 +10,8 @@ class UserController extends Controller
 {
     public function index(Request $request)
     {
-        $query = User::withCount(['completedAttempts']);
+        $query = User::withCount('quizAttempts')
+                     ->with(['quizAttempts.result']);
 
         if ($request->filled('search')) {
             $query->where('name', 'like', '%' . $request->search . '%')
