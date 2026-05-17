@@ -135,11 +135,11 @@
                     @endif
                 </div>
             </div>
+        </form>
 
-            {{-- Hidden submit form --}}
-            <form id="submit-form" method="POST" action="{{ route('quiz.submit', $attempt->id) }}" style="display:none">
-                @csrf
-            </form>
+        {{-- Hidden submit form — MUST be outside #question-form (nested forms are invalid HTML) --}}
+        <form id="submit-form" method="POST" action="{{ route('quiz.submit', $attempt->id) }}" style="display:none">
+            @csrf
         </form>
 
     </div>
@@ -154,11 +154,11 @@
                 Unanswered questions will be marked as incorrect.
             </p>
             <div class="flex gap-4">
-                <button onclick="document.getElementById('submit-modal').classList.add('hidden')"
+                <button type="button" onclick="document.getElementById('submit-modal').classList.add('hidden')"
                     class="flex-1 py-3 rounded-xl border border-white/10 text-gray-300 hover:border-white/20 transition-colors font-semibold">
                     Keep Going
                 </button>
-                <button onclick="document.getElementById('submit-form').submit()"
+                <button type="button" onclick="submitQuizNow()"
                     class="flex-1 py-3 rounded-xl btn-submit font-display font-bold">
                     Submit Now
                 </button>
@@ -212,9 +212,19 @@
             form.submit();
         }
 
-        // Confirm submit
+        // Confirm submit — show modal
         function confirmSubmit() {
             document.getElementById('submit-modal').classList.remove('hidden');
+        }
+
+        // Final submit — use explicit form submit on the standalone #submit-form
+        function submitQuizNow() {
+            const form = document.getElementById('submit-form');
+            if (form) {
+                form.submit();
+            } else {
+                console.error('submit-form not found!');
+            }
         }
 
         // Auto-save every 30 seconds
