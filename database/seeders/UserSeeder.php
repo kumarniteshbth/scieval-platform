@@ -12,14 +12,22 @@ class UserSeeder extends Seeder
     {
         // Admin user - use firstOrCreate to avoid duplicates on re-deploy
         User::firstOrCreate(
-            ['email' => 'admin@scienceeval.com'],
+            ['email' => 'admin@scieval.com'],
             [
-                'name'        => 'Admin Kumar',
-                'password'    => Hash::make('password'),
-                'role'        => 'admin',
-                'institution' => 'Science Evaluation Platform',
+                'name'              => 'Admin Kumar',
+                'password'          => Hash::make('Admin@1234'),
+                'role'              => 'admin',
+                'institution'       => 'Science Evaluation Platform',
+                'email_verified_at' => now(),
             ]
         );
+
+        // If old admin email exists, update it to new one
+        User::where('email', 'admin@scienceeval.com')->update([
+            'email'             => 'admin@scieval.com',
+            'password'          => Hash::make('Admin@1234'),
+            'email_verified_at' => now(),
+        ]);
 
         // Sample students
         $students = [
@@ -34,10 +42,11 @@ class UserSeeder extends Seeder
             User::firstOrCreate(
                 ['email' => $student['email']],
                 [
-                    'name'        => $student['name'],
-                    'password'    => Hash::make('password'),
-                    'role'        => 'student',
-                    'institution' => 'Government Engineering College',
+                    'name'              => $student['name'],
+                    'password'          => Hash::make('password'),
+                    'role'              => 'student',
+                    'institution'       => 'Government Engineering College',
+                    'email_verified_at' => now(),
                 ]
             );
         }
