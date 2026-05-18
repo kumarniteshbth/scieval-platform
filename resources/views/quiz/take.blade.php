@@ -167,14 +167,14 @@
     </div>
 
     <script>
-        // Timer
-        let timeLeft = {{ $timeLeft }};
+        // Timer — parseInt ensures no float decimals from PHP
+        let timeLeft = parseInt({{ $timeLeft }}, 10);
         const timerEl = document.getElementById('timer');
         const timerBox = document.getElementById('timer-box');
 
         function updateTimer() {
             const m = Math.floor(timeLeft / 60);
-            const s = timeLeft % 60;
+            const s = Math.floor(timeLeft % 60);
             timerEl.textContent = String(m).padStart(2,'0') + ':' + String(s).padStart(2,'0');
 
             if (timeLeft <= 60) {

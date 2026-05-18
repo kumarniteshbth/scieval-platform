@@ -147,8 +147,8 @@ class QuizController extends Controller
         // Calculate temper sub-scores
         $subScores = $this->calculateTemperScores($answers);
 
-        // Calculate time taken
-        $timeTaken = $attempt->started_at ? now()->diffInSeconds($attempt->started_at) : 0;
+        // Calculate time taken (cast to int — Carbon diffInSeconds can return float)
+        $timeTaken = $attempt->started_at ? (int) now()->diffInSeconds($attempt->started_at) : 0;
 
         // Save result
         $result = Result::create([
@@ -200,9 +200,9 @@ class QuizController extends Controller
         // Previously selected option
         $selectedOption = $attempt->answers()->where('question_id', $question->id)->value('selected_option_id');
 
-        // Time remaining
+        // Time remaining (cast to int — Carbon diffInSeconds returns float in newer versions)
         $timeLeft = $attempt->expires_at
-            ? max(0, now()->diffInSeconds($attempt->expires_at, false))
+            ? max(0, (int) now()->diffInSeconds($attempt->expires_at, false))
             : ($quiz->time_limit * 60);
 
         return view('quiz.take', compact(
