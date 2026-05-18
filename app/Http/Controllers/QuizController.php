@@ -147,8 +147,10 @@ class QuizController extends Controller
         // Calculate temper sub-scores
         $subScores = $this->calculateTemperScores($answers);
 
-        // Calculate time taken (cast to int — Carbon diffInSeconds can return float)
-        $timeTaken = $attempt->started_at ? (int) now()->diffInSeconds($attempt->started_at) : 0;
+        // Calculate time taken — cap at quiz time_limit to handle stale/resumed attempts
+        $quizMaxSeconds = $attempt->quiz->time_limit * 60;
+        $elapsed        = $attempt->started_at ? (int) now()->diffInSeconds($attempt->started_at) : 0;
+        $timeTaken      = min($elapsed, $quizMaxSeconds);
 
         // Save result
         $result = Result::create([

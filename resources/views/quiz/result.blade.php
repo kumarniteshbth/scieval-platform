@@ -41,7 +41,12 @@
         </div>
 
         <div class="text-gray-400 text-sm mt-4">
-            Completed in: {{ gmdate('i:s', $result->time_taken ?? 0) }} minutes
+            @php
+                $tt   = $result->time_taken ?? 0;
+                $mins = floor($tt / 60);
+                $secs = $tt % 60;
+            @endphp
+            Completed in: {{ sprintf('%02d:%02d', $mins, $secs) }} minutes
         </div>
     </div>
 
